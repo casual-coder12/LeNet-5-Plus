@@ -35,9 +35,17 @@ class LeNetTrainer:
         # Set default loss function to CategoricalCrossentropy (assuming one-hot encoded labels)
         self.loss_fn = loss_fn or losses.SparseCategoricalCrossentropy()
 
+        # Set up learning rate schedule (Exponential Decay)
+        lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay(
+            initial_learning_rate=0.001,
+            decay_steps=50000//64 * 10,     # Assuming 50,000 samples and batch size of 64, decay every 10 epochs
+            decay_rate=0.1,
+            staircase=True
+        )
+
         # Set default optimizer to Adam
         self.optimizer = optimizer or optimizers.Adam(
-            learning_rate=self.learning_rate
+            learning_rate=lr_schedule
         )
 
         self.metric_fns=[
