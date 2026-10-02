@@ -11,8 +11,8 @@ def load_model(model_class, dataset_name, load_type="m", input_shape=(32, 32, 3)
     file_path = os.path.join(saved_models_dir, f"lenet5_{dataset_name}{ext}")
     file_path_best = os.path.join(saved_models_dir, f"lenet5_{dataset_name}_best_model.keras")
 
-    if not os.path.exists(file_path):
-        raise FileNotFoundError(f"Model file not found at: {file_path}")
+    # if not os.path.exists(file_path):
+    #     raise FileNotFoundError(f"Model file not found at: {file_path}")
 
     if load_type == "w":
         model = model_class(input_shape=input_shape, num_classes=num_classes)
