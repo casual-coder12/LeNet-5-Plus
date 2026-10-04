@@ -3,9 +3,9 @@ import keras
 from tensorflow.keras import layers, models
 
 
-def LeNet5(input_shape, num_classes):
+def LeNet5Plus(input_shape, num_classes):
     """
-    LeNet-5 model implementation using Keras Functional API.
+    LeNet-5 Plus model implementation using Keras Functional API.
     This approach provides better compatibility with model saving/loading.
     
     Args:
@@ -95,7 +95,7 @@ def LeNet5(input_shape, num_classes):
     )(x)
     
     # Create the model
-    model = tf.keras.Model(inputs=inputs, outputs=outputs, name='LeNet5')
+    model = tf.keras.Model(inputs=inputs, outputs=outputs, name='LeNet5Plus')
     
     return model
     

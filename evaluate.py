@@ -7,13 +7,13 @@ import tensorflow as tf
 from tensorflow.keras import losses, metrics, models
 
 from data.dataset import prepare_mnist_dataset, prepare_cifar10_dataset
-from models.lenet5 import LeNet5
+from models.lenet5plus import LeNet5Plus
 from models.model_loader import load_model
 from utils.trainer import LeNetTrainer
 from utils.visualize import plot_confusion_matrix, plot_training_hist_df, plot_sample_predictions
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="Evaluate a pre-trained LeNet-5 model on MNIST or CIFAR-10 datasets.")
+    parser = argparse.ArgumentParser(description="Evaluate a pre-trained LeNet-5 Plus model on MNIST or CIFAR-10 datasets.")
     parser.add_argument(
         "--dataset",
         type=str,
@@ -56,7 +56,7 @@ def evaluate():
 
     # Load the trained model
     model = load_model(
-        model_class=LeNet5,
+        model_class=LeNet5Plus,
         dataset_name=dataset_name,
         load_type=args.load_type,
         input_shape=input_shape,

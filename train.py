@@ -2,7 +2,7 @@ import os
 import sys
 import argparse
 
-from models.lenet5 import LeNet5
+from models.lenet5plus import LeNet5Plus
 from data.dataset import prepare_mnist_dataset, prepare_cifar10_dataset
 from utils.trainer import LeNetTrainer
 from utils.visualize import plot_training_history
@@ -78,7 +78,7 @@ def main():
         raise ValueError("Invalid dataset name. Choose 'mnist' or 'cifar10'.")
 
     # Instantiate model and trainer wrapper
-    model = LeNet5(input_shape=input_shape, num_classes=10)
+    model = LeNet5Plus(input_shape=input_shape, num_classes=10)
     trainer = LeNetTrainer(model=model, learning_rate=args.learning_rate, steps_per_epoch=len(train_data), epochs=args.epochs)
 
     # Train model

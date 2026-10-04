@@ -5,12 +5,12 @@ import tensorflow as tf
 from tensorflow.keras import losses, metrics, optimizers
 from tensorflow.keras.callbacks import CSVLogger, ModelCheckpoint
 
-from models.lenet5 import LeNet5
+from models.lenet5plus import LeNet5Plus
 
 class LeNetTrainer:
     """
     Trainer class to manage training, validation, and evaluation processes 
-    for the LeNet-5 model using TensorFlow/Keras.
+    for the LeNet-5 Plus model using TensorFlow/Keras.
     """
 
     def __init__(
@@ -26,7 +26,7 @@ class LeNetTrainer:
         Initializes the trainer with model, optimizer, and loss function.
 
         Args:
-            model (tf.keras.Model): The LeNet-5 model instance to be trained.
+            model (tf.keras.Model): The LeNet-5 Plus model instance to be trained.
             learning_rate (float): Learning rate for the optimizer. Default is 0.001.
             loss_fn: Keras loss function instance. Defaults to CategoricalCrossentropy if None.
             optimizer: Keras optimizer instance. Defaults to Adam if None.
@@ -52,7 +52,7 @@ class LeNetTrainer:
 
         # Set default optimizer to Adam
         self.optimizer = optimizer or optimizers.Adam(
-            learning_rate=lr_schedule
+            learning_rate=self.learning_rate
         )
 
         self.metric_fns=[
@@ -76,7 +76,7 @@ class LeNetTrainer:
         load_checkpoint: bool = False
         ) -> tf.keras.callbacks.History:
         """
-        Trains the LeNet-5 model using tf.data Datasets.
+        Trains the LeNet-5 Plus model using tf.data Datasets.
 
         Args:
             train_data (tf.data.Dataset): Prepared training dataset loader.
@@ -126,7 +126,7 @@ class LeNetTrainer:
             train_data,
             validation_data=val_data,
             epochs=epochs,
-            callbacks=[csv_logger, checkpoint],
+            callbacks=[csv_logger, checkpoint, reduce_lr],
             )
 
         self.save_model(dataset_name=dataset_name, save_type=save_type)

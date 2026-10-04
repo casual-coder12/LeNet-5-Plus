@@ -9,21 +9,13 @@ The upgraded LeNet-5 Plus model improved CIFAR-10 test accuracy from **53.5% to 
 | Model | CIFAR-10 accuracy |
 |---|---:|
 | Baseline LeNet-5 | 53.5% |
-| Upgraded LeNet-5 Plus | **76.5%** |
+| Upgraded LeNet-5 Plus | **76.71%** |
 
 This is an improvement of **23 percentage points** over the baseline. The upgraded-model experiment focused on CIFAR-10. MNIST remains supported by the project code, but was left out of this comparison because both the baseline and upgraded models already achieved high accuracy on it.
 
-The reported 50-epoch experiment used a stepwise learning-rate schedule:
+Training starts with a learning rate of `0.001` and uses Keras `ReduceLROnPlateau`, monitoring validation loss (`val_loss`). If validation loss does not improve for 3 consecutive epochs, the callback halves the learning rate, down to a minimum of `0.000001`. Since each reduction depends on validation-loss behavior, the learning rate does not follow a fixed epoch-by-epoch schedule.
 
-| Training phase | Learning rate |
-|---|---:|
-| Epochs 1–20 | 0.001 |
-| Epochs 21–40 | 0.0001 |
-| Epochs 41–50 | 0.00001 |
-
-The validation curves show some oscillation. Random data augmentation and dropout may contribute to less smooth training from epoch to epoch. They are active only during training, not validation, so any effect on validation metrics is indirect, through the model weights learned during training. This is a plausible explanation, not a confirmed diagnosis.
-
-**Reproducibility note:** the schedule above describes the reported experiment. The current `train.py` accepts an initial learning rate, but `LeNetTrainer` does not currently implement automatic learning-rate scheduling. Reproducing the exact schedule requires adding a scheduler or changing the learning rate during training.
+The validation curves oscillated more at the beginning of training and stabilized afterward. Data augmentation and dropout may contribute to the early fluctuations, but this is not confirmed. Both are active during training rather than validation, so their influence on validation metrics is indirect, through the learned model weights.
 
 ## Model
 
