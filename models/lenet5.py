@@ -18,18 +18,20 @@ def LeNet5(input_shape, num_classes):
     inputs = tf.keras.Input(shape=input_shape, name='input')
     
     data_augmentation = tf.keras.Sequential([
-        layers.RandomCrop(32, 32),
         layers.RandomFlip("horizontal"),
-        layers.RandomRotation(0.05),
-        layers.RandomTranslation(0.1, 0.1),
-    ])
+        layers.RandomRotation(0.03),
+        layers.RandomTranslation(0.05, 0.05),
+    ], 
+    name='augmentation'
+    )
 
     x = data_augmentation(inputs)
 
     # C1: Convolutional layer
     x = layers.Conv2D(
         filters=32,
-        kernel_size=(5, 5),
+        kernel_size=(3, 3),
+        padding='same',
         name='C1_Conv'
     )(x)
 
@@ -46,7 +48,8 @@ def LeNet5(input_shape, num_classes):
     # C3: Convolutional layer
     x = layers.Conv2D(
         filters=64,
-        kernel_size=(5, 5),
+        kernel_size=(3, 3),
+        padding='same',
         name='C3_Conv'
     )(x)
     
@@ -63,18 +66,16 @@ def LeNet5(input_shape, num_classes):
     # C5: Convolutional layer
     x = layers.Conv2D(
         filters=128,
-        kernel_size=(5, 5),
+        kernel_size=(3, 3),
+        padding='same',
         name='C5_Conv'
     )(x)
     
     x = layers.BatchNormalization()(x)
     x = layers.Activation('relu')(x)
 
-    # Flatten layer
-    x = layers.Flatten(name='Flatten')(x)
-
-    # Dropout layer
-    x = layers.Dropout(0.5, name='Dropout')(x)
+    # Global Average Pooling layer
+    x = layers.GlobalAveragePooling2D(name="GAP")(x)
     
     # F6: Fully connected layer
     x = layers.Dense(
@@ -82,6 +83,9 @@ def LeNet5(input_shape, num_classes):
         activation='relu',
         name='F6_Dense'
     )(x)
+
+    # Dropout layer
+    x = layers.Dropout(0.5, name='Dropout')(x)
     
     # Output layer
     outputs = layers.Dense(

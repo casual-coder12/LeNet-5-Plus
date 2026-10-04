@@ -19,6 +19,8 @@ class LeNetTrainer:
         learning_rate: float = 0.001,
         loss_fn=None,
         optimizer=None,
+        steps_per_epoch: int = 100,
+        epochs: int = 50
         ):
         """
         Initializes the trainer with model, optimizer, and loss function.
@@ -28,18 +30,23 @@ class LeNetTrainer:
             learning_rate (float): Learning rate for the optimizer. Default is 0.001.
             loss_fn: Keras loss function instance. Defaults to CategoricalCrossentropy if None.
             optimizer: Keras optimizer instance. Defaults to Adam if None.
+            steps_per_epoch (int): Number of steps per epoch for training. Default is 100.
+            epochs (int): Total number of training epochs. Default is 50.
         """
         self.model = model
         self.learning_rate = learning_rate
+        self.steps_per_epoch = steps_per_epoch
+        self.epochs = epochs
+        self.total_steps = steps_per_epoch * epochs
 
-        # Set default loss function to CategoricalCrossentropy (assuming one-hot encoded labels)
+        # Set default loss function to SparseCategoricalCrossentropy)
         self.loss_fn = loss_fn or losses.SparseCategoricalCrossentropy()
 
         # Set up learning rate schedule (Exponential Decay)
         lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay(
-            initial_learning_rate=0.001,
-            decay_steps=50000//64 * 10,     # Assuming 50,000 samples and batch size of 64, decay every 10 epochs
-            decay_rate=0.1,
+            initial_learning_rate=self.learning_rate,
+            decay_steps=self.steps_per_epoch * 5,     # decay every 5 epochs
+            decay_rate=0.5,
             staircase=True
         )
 
@@ -65,7 +72,7 @@ class LeNetTrainer:
         val_data: tf.data.Dataset,
         dataset_name: str,
         save_type: str,
-        epochs: int = 20,
+        epochs: int = 50,
         load_checkpoint: bool = False
         ) -> tf.keras.callbacks.History:
         """
@@ -88,7 +95,7 @@ class LeNetTrainer:
         path_to_save_checkpoint = os.path.join("saved_models", f"lenet5_{dataset_name}_best_model.keras")
 
         # Set up CSV logger to log training history to a CSV file
-        csv_logger = CSVLogger(path_to_save_history, append=True)
+        csv_logger = CSVLogger(path_to_save_history, append=load_checkpoint)
 
         # Set up ModelCheckpoint to save the best model based on validation loss
         checkpoint = ModelCheckpoint(
@@ -107,12 +114,20 @@ class LeNetTrainer:
         else:
             print(f"--- Starting LeNet-5 Plus Training for {epochs} Epochs ---")
 
+        reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(
+            monitor="val_loss",
+            factor=0.5,  # Reduce learning rate by a factor of 0.5
+            patience=3,  # Wait for 3 epochs without improvement
+            min_lr=1e-6,  # Minimal allowed learning rate
+            verbose=1
+        )
+
         self.history = self.model.fit(
             train_data,
             validation_data=val_data,
             epochs=epochs,
-            callbacks=[csv_logger, checkpoint]
-        )
+            callbacks=[csv_logger, checkpoint],
+            )
 
         self.save_model(dataset_name=dataset_name, save_type=save_type)
 

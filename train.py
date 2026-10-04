@@ -33,8 +33,8 @@ def parse_args():
     parser.add_argument(
         "--batch_size",
         type=int,
-        default=64,
-        help="Batch size for training (default: 64).",
+        default=128,
+        help="Batch size for training (default: 128).",
     )
     parser.add_argument(
         "--learning_rate",
@@ -79,7 +79,7 @@ def main():
 
     # Instantiate model and trainer wrapper
     model = LeNet5(input_shape=input_shape, num_classes=10)
-    trainer = LeNetTrainer(model=model, learning_rate=args.learning_rate)
+    trainer = LeNetTrainer(model=model, learning_rate=args.learning_rate, steps_per_epoch=len(train_data), epochs=args.epochs)
 
     # Train model
     history = trainer.train(train_data=train_data, val_data=val_data, epochs=args.epochs, dataset_name=args.dataset, save_type=args.save_type, load_checkpoint=args.load_checkpoint)
